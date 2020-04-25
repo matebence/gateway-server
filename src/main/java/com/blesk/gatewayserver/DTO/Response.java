@@ -1,6 +1,6 @@
-package com.blesk.gatewayserver;
+package com.blesk.gatewayserver.DTO;
 
-public class GatewayMessageResponse {
+public class Response {
 
     private String timestamp;
 
@@ -8,10 +8,10 @@ public class GatewayMessageResponse {
 
     private boolean error;
 
-    public GatewayMessageResponse() {
+    public Response() {
     }
 
-    public GatewayMessageResponse(String timestamp, String message, boolean error) {
+    public Response(String timestamp, String message, boolean error) {
         this.timestamp = timestamp;
         this.message = message;
         this.error = error;
