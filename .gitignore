@@ -32,3 +32,5 @@ build/
 
 ### Profile ###
 /src/main/resources/bootstrap.yml
+/DockerFile
+/wait-for-it.sh
