@@ -11,16 +11,14 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.springframework.web.filter.CorsFilter;
 
-import java.util.List;
-
 @Configuration
 public class Security extends WebSecurityConfigurerAdapter {
 
     @Value("${blesk.cors.allowed.origins}")
-    private List<String> origins;
+    private String origins;
 
     @Value("${blesk.cors.allowed.methods}")
-    private List<String> methods;
+    private String methods;
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
@@ -34,10 +32,10 @@ public class Security extends WebSecurityConfigurerAdapter {
 
         config.setAllowCredentials(true);
         config.addAllowedHeader("*");
-        for (String origin : this.origins){
+        for (String origin : this.origins.split(", ")){
             config.addAllowedOrigin(origin);
         }
-        for (String method : this.methods){
+        for (String method : this.methods.split(", ")){
             config.addAllowedMethod(method);
         }
 
