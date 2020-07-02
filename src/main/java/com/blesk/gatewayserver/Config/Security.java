@@ -11,16 +11,16 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.springframework.web.filter.CorsFilter;
 
-import java.util.ArrayList;
+import java.util.List;
 
 @Configuration
 public class Security extends WebSecurityConfigurerAdapter {
 
     @Value("${blesk.cors.allowed.origins}")
-    private ArrayList<String> origins;
+    private List<String> origins;
 
     @Value("${blesk.cors.allowed.methods}")
-    private ArrayList<String> methods;
+    private List<String> methods;
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
