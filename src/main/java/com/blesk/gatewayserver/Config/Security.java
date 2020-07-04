@@ -30,11 +30,9 @@ public class Security extends WebSecurityConfigurerAdapter {
         final UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         final CorsConfiguration config = new CorsConfiguration();
 
-        config.addAllowedHeader("Authorization");
+        config.setAllowCredentials(true);
         config.addAllowedHeader("*");
         
-        config.setAllowCredentials(true);
-
         for (String origin : this.origins.split(", ")){
             config.addAllowedOrigin(origin);
         }
