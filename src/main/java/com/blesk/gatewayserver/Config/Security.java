@@ -24,6 +24,9 @@ public class Security extends WebSecurityConfigurerAdapter {
     @Value("${blesk.cors.allowed.methods}")
     private String methods;
 
+    @Value("${blesk.cors.allowed.headers}")
+    private String headers;
+
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         http.authorizeRequests().anyRequest().authenticated();
@@ -35,9 +38,9 @@ public class Security extends WebSecurityConfigurerAdapter {
 
         CorsConfiguration config = new CorsConfiguration();
         config.setAllowCredentials(true);
-        config.setAllowedOrigins(Arrays.asList("http://localhost:4200", "http://localhost:4300", "http://localhost:4400"));
-        config.setAllowedHeaders(Arrays.asList("X-Requested-With", "Origin", "Content-Type", "Accept", "Authorization"));
-        config.setAllowedMethods(Arrays.asList("POST", "OPTIONS", "GET", "DELETE", "PUT"));
+        config.setAllowedOrigins(Arrays.asList(this.origins.split(", ")));
+        config.setAllowedHeaders(Arrays.asList(this.headers.split(", ")));
+        config.setAllowedMethods(Arrays.asList(this.methods.split(", ")));
         
         source.registerCorsConfiguration("/**", config);
 
