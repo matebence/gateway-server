@@ -13,6 +13,8 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.springframework.web.filter.CorsFilter;
 
+import java.util.Arrays;
+
 @Configuration
 public class Security extends WebSecurityConfigurerAdapter {
 
@@ -29,23 +31,18 @@ public class Security extends WebSecurityConfigurerAdapter {
 
     @Bean
     public FilterRegistrationBean corsFilter() {
-        final UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-        final CorsConfiguration config = new CorsConfiguration();
-
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        CorsConfiguration config = new CorsConfiguration();
         config.setAllowCredentials(true);
-        config.addAllowedHeader("localhost");
-
-        for (String origin : this.origins.split(", ")){
-            config.addAllowedOrigin(origin);
-        }
-        for (String method : this.methods.split(", ")){
-            config.addAllowedMethod(method);
-        }
-
+        config.addAllowedOrigin("http://localhost:4200");
+        config.addAllowedOrigin("http://localhost:4300");
+        config.addAllowedOrigin("http://localhost:4400");
+        config.setAllowedMethods(Arrays.asList("POST", "OPTIONS", "GET", "DELETE", "PUT"));
+        config.setAllowedHeaders(Arrays.asList("X-Requested-With", "Origin", "Content-Type", "Accept", "Authorization"));
         source.registerCorsConfiguration("/**", config);
-        FilterRegistrationBean filterRegistrationBean = new FilterRegistrationBean(new CorsFilter(source));
-        filterRegistrationBean.setOrder(Ordered.HIGHEST_PRECEDENCE);
-        return filterRegistrationBean;
+        FilterRegistrationBean bean = new FilterRegistrationBean(new CorsFilter(source));
+        bean.setOrder(Ordered.HIGHEST_PRECEDENCE);
+        return bean;
     }
 
     @Bean
