@@ -33,8 +33,7 @@ public class Security extends WebSecurityConfigurerAdapter {
         final CorsConfiguration config = new CorsConfiguration();
 
         config.setAllowCredentials(true);
-        config.addAllowedHeader("*");
-        
+
         for (String origin : this.origins.split(", ")){
             config.addAllowedOrigin(origin);
         }
