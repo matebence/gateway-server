@@ -27,6 +27,9 @@ public class Security extends WebSecurityConfigurerAdapter {
     @Value("${blesk.cors.allowed.headers}")
     private String headers;
 
+    @Value("${blesk.cors.allowed.exposed}")
+    private String exposed;
+
     @Value("${blesk.cors.allowed.age}")
     private Long age;
 
@@ -45,7 +48,7 @@ public class Security extends WebSecurityConfigurerAdapter {
         config.setAllowedOrigins(Arrays.asList(this.origins.split(", ")));
         config.setAllowedHeaders(Arrays.asList(this.headers.split(", ")));
         config.setAllowedMethods(Arrays.asList(this.methods.split(", ")));
-
+        config.setExposedHeaders(Arrays.asList(this.exposed.split(", ")));
         source.registerCorsConfiguration("/**", config);
 
         FilterRegistrationBean filterRegistrationBean = new FilterRegistrationBean(new CorsFilter(source));
