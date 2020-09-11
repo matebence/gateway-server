@@ -27,6 +27,9 @@ public class Security extends WebSecurityConfigurerAdapter {
     @Value("${blesk.cors.allowed.headers}")
     private String headers;
 
+    @Value("${blesk.cors.allowed.age}")
+    private Long age;
+
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         http.authorizeRequests().anyRequest().authenticated();
@@ -37,11 +40,12 @@ public class Security extends WebSecurityConfigurerAdapter {
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
 
         CorsConfiguration config = new CorsConfiguration();
+        config.setMaxAge(this.age);
         config.setAllowCredentials(true);
         config.setAllowedOrigins(Arrays.asList(this.origins.split(", ")));
         config.setAllowedHeaders(Arrays.asList(this.headers.split(", ")));
         config.setAllowedMethods(Arrays.asList(this.methods.split(", ")));
-        
+
         source.registerCorsConfiguration("/**", config);
 
         FilterRegistrationBean filterRegistrationBean = new FilterRegistrationBean(new CorsFilter(source));
