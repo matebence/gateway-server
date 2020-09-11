@@ -14,6 +14,7 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.springframework.web.filter.CorsFilter;
 
 import java.util.Arrays;
+import java.util.Collections;
 
 @Configuration
 public class Security extends WebSecurityConfigurerAdapter {
@@ -43,12 +44,19 @@ public class Security extends WebSecurityConfigurerAdapter {
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
 
         CorsConfiguration config = new CorsConfiguration();
-        config.setMaxAge(this.age);
-        config.setAllowCredentials(true);
-        config.setAllowedOrigins(Arrays.asList(this.origins.split(", ")));
-        config.setAllowedHeaders(Arrays.asList(this.headers.split(", ")));
-        config.setAllowedMethods(Arrays.asList(this.methods.split(", ")));
-        config.setExposedHeaders(Arrays.asList(this.exposed.split(", ")));
+//        config.setMaxAge(this.age);
+//        config.setAllowCredentials(true);
+//        config.setAllowedOrigins(Arrays.asList(this.origins.split(", ")));
+//        config.setAllowedHeaders(Arrays.asList(this.headers.split(", ")));
+//        config.setAllowedMethods(Arrays.asList(this.methods.split(", ")));
+//        config.setExposedHeaders(Arrays.asList(this.exposed.split(", ")));
+
+        config.setMaxAge(3600L);
+        config.setAllowCredentials(Boolean.TRUE);
+        config.setAllowedOrigins(Collections.singletonList("*"));
+        config.setAllowedHeaders(Collections.singletonList("*"));
+        config.setAllowedMethods(Collections.singletonList("*"));
+        config.setExposedHeaders(Collections.singletonList("*"));
         source.registerCorsConfiguration("/**", config);
 
         FilterRegistrationBean filterRegistrationBean = new FilterRegistrationBean(new CorsFilter(source));
