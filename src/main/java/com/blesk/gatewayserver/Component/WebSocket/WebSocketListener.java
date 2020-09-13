@@ -5,4 +5,6 @@ import org.springframework.web.socket.messaging.SessionDisconnectEvent;
 public interface WebSocketListener {
 
     void handleWebSocketDisconnectListener(SessionDisconnectEvent event);
+
+    void handleTempSecurityContext(String tokenValue);
 }
