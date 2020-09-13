@@ -6,5 +6,5 @@ public interface WebSocketListener {
 
     void handleWebSocketDisconnectListener(SessionDisconnectEvent event);
 
-    void handleTempSecurityContext(String tokenValue);
+    void injectSecurityContextViaAccessToken(String tokenValue);
 }

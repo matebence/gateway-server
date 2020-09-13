@@ -42,7 +42,7 @@ public class WebSocketListenerImpl implements WebSocketListener {
         String accessToken = (String) headerAccessor.getSessionAttributes().get("accessToken");
         if (userName == null || accessToken == null) return;
 
-        this.handleTempSecurityContext(accessToken);
+        this.injectSecurityContextViaAccessToken(accessToken);
 
         WebSocket.Status status = new WebSocket.Status();
         status.setState(WebSocket.State.OFFLINE.name());
@@ -55,7 +55,7 @@ public class WebSocketListenerImpl implements WebSocketListener {
     }
 
     @Override
-    public void handleTempSecurityContext(String accessToken) {
+    public void injectSecurityContextViaAccessToken(String accessToken) {
         OAuth2Request oAuth2Request = new OAuth2Request(new HashMap<String, String>(), "client_id", new HashSet<GrantedAuthority>(), true, new HashSet<String>(), null, "", new HashSet<String>(), null);
         User userPrincipal = new User("user", "", true, true, true, true, new HashSet<GrantedAuthority>());
         UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken = new UsernamePasswordAuthenticationToken(userPrincipal, null, new HashSet<GrantedAuthority>());
