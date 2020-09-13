@@ -23,7 +23,7 @@ import static java.lang.String.format;
 
 @RestController
 @RequestMapping(value = "/", produces = "application/json")
-public class ConversationController {
+public class WebSocketController {
 
     private SimpMessageSendingOperations simpMessageSendingOperations;
 
@@ -32,7 +32,7 @@ public class ConversationController {
     private NotificationsServiceImpl notificationsService;
 
     @Autowired
-    public ConversationController(SimpMessageSendingOperations simpMessageSendingOperations, MessagingServiceProxy messagingServiceProxy, NotificationsServiceImpl notificationsService) {
+    public WebSocketController(SimpMessageSendingOperations simpMessageSendingOperations, MessagingServiceProxy messagingServiceProxy, NotificationsServiceImpl notificationsService) {
         this.simpMessageSendingOperations = simpMessageSendingOperations;
         this.messagingServiceProxy = messagingServiceProxy;
         this.notificationsService = notificationsService;
