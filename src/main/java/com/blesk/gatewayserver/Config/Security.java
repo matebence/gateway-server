@@ -41,8 +41,6 @@ public class Security extends WebSecurityConfigurerAdapter {
         config.setAllowedOrigins(Arrays.asList(this.origins.split(", ")));
         config.setAllowedHeaders(Arrays.asList(this.headers.split(", ")));
         config.setAllowedMethods(Arrays.asList(this.methods.split(", ")));
-        
-        source.registerCorsConfiguration("/**", config);
 
         FilterRegistrationBean filterRegistrationBean = new FilterRegistrationBean(new CorsFilter(source));
         filterRegistrationBean.setOrder(Ordered.HIGHEST_PRECEDENCE);

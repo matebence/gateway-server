@@ -1,6 +1,7 @@
 package com.blesk.gatewayserver.EntryPoint;
 
 import com.blesk.gatewayserver.DTO.Response;
+import com.blesk.gatewayserver.Value.Messages;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.AuthenticationEntryPoint;
@@ -13,7 +14,7 @@ import java.sql.Timestamp;
 public class OAuthEntryPoint implements AuthenticationEntryPoint {
     @Override
     public void commence(HttpServletRequest request, HttpServletResponse response, AuthenticationException authException) throws ServletException {
-        Response errorObj = new Response(new Timestamp(System.currentTimeMillis()).toString(), "Ľutujeme, ale stránka nie je k dispozícií", true);
+        Response errorObj = new Response(new Timestamp(System.currentTimeMillis()).toString(), Messages.AUTH_EXCEPTION, true);
 
         response.setContentType("application/json");
         response.setStatus(HttpServletResponse.SC_FORBIDDEN);
