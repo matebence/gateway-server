@@ -1,6 +1,7 @@
 package com.blesk.gatewayserver.Handler;
 
 import com.blesk.gatewayserver.DTO.Response;
+import com.blesk.gatewayserver.Value.Messages;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.web.access.AccessDeniedHandler;
@@ -15,7 +16,7 @@ public class OAuthHandler implements AccessDeniedHandler {
 
     @Override
     public void handle(HttpServletRequest request, HttpServletResponse response, AccessDeniedException accessDeniedException) throws IOException, ServletException {
-        Response errorObj = new Response(new Timestamp(System.currentTimeMillis()).toString(), "Prístup odmietnutý", true);
+        Response errorObj = new Response(new Timestamp(System.currentTimeMillis()).toString(), Messages.AUTH_REQUIRED_EXCEPTION, true);
 
         response.setContentType("application/json");
         response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
