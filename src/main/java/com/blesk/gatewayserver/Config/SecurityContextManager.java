@@ -1,4 +1,4 @@
-package com.blesk.gatewayserver.Tool;
+package com.blesk.gatewayserver.Config;
 
 import com.google.auth.oauth2.AccessToken;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -11,7 +11,7 @@ import org.springframework.security.oauth2.provider.OAuth2Request;
 import java.util.HashMap;
 import java.util.HashSet;
 
-public class SecurityContextManger {
+public class SecurityContextManager {
 
     private UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken;
 

@@ -1,8 +1,8 @@
 package com.blesk.gatewayserver.Component.WebSocket;
 
-import com.blesk.gatewayserver.Model.WebSocket;
+import com.blesk.gatewayserver.Model.Model;
 import com.blesk.gatewayserver.Proxy.MessagingServiceProxy;
-import com.blesk.gatewayserver.Tool.SecurityContextManger;
+import com.blesk.gatewayserver.Config.SecurityContextManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.event.EventListener;
 import org.springframework.messaging.simp.SimpMessageSendingOperations;
@@ -33,14 +33,14 @@ public class WebSocketListenerImpl implements WebSocketListener {
         String accessToken = (String) headerAccessor.getSessionAttributes().get("accessToken");
         if (userName == null || accessToken == null) return;
 
-        SecurityContextManger securityContextManger = new SecurityContextManger();
-        securityContextManger.buildSecurityContext(accessToken, userName);
+        SecurityContextManager securityContextManager = new SecurityContextManager();
+        securityContextManager.buildSecurityContext(accessToken, userName);
 
-        WebSocket.Status status = new WebSocket.Status();
-        status.setState(WebSocket.State.OFFLINE.name());
+        Model.Status status = new Model.Status();
+        status.setState(Model.State.OFFLINE.name());
         status.setToken(null);
         status.setUserName(userName);
-        WebSocket.Status state = this.messagingServiceProxy.createStatus(status).getContent();
+        Model.Status state = this.messagingServiceProxy.createStatus(status).getContent();
 
         if (state == null) return;
         this.simpMessageSendingOperations.convertAndSend("/status", state);

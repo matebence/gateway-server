@@ -1,9 +1,10 @@
 package com.blesk.gatewayserver.Controller;
 
 import com.blesk.gatewayserver.DTO.Notifications;
-import com.blesk.gatewayserver.Model.WebSocket;
+import com.blesk.gatewayserver.DTO.Websocket;
+import com.blesk.gatewayserver.Model.Model;
 import com.blesk.gatewayserver.Proxy.MessagingServiceProxy;
-import com.blesk.gatewayserver.Tool.SecurityContextManger;
+import com.blesk.gatewayserver.Config.SecurityContextManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.MessageMapping;
@@ -15,7 +16,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.HashMap;
-import java.util.Map;
 
 import static java.lang.String.format;
 
@@ -37,49 +37,44 @@ public class WebSocketController {
     }
 
     @MessageMapping("/state")
-    public void setConversationState(@Payload Map payload, SimpMessageHeaderAccessor headerAccessor) {
-        WebSocket.Status status = (WebSocket.Status) payload.get("status");
-        WebSocket.AccessToken accessToken = (WebSocket.AccessToken) payload.get("accessToken");
+    public void setConversationState(@Payload Websocket.Status websocket, SimpMessageHeaderAccessor headerAccessor) {
+        if (headerAccessor.getSessionAttributes() == null || websocket == null || websocket.getStatus() == null || websocket.getStatus() == null) return;
+        headerAccessor.getSessionAttributes().put("accessToken", websocket.getAccessToken().getToken());
+        headerAccessor.getSessionAttributes().put("userName", websocket.getStatus().getUserName());
 
-        if (headerAccessor.getSessionAttributes() == null || status == null || accessToken == null) return;
-        headerAccessor.getSessionAttributes().put("userName", status.getUserName());
-        headerAccessor.getSessionAttributes().put("accessToken", accessToken.getToken());
-
-        SecurityContextManger securityContextManger = new SecurityContextManger();
-        securityContextManger.buildSecurityContext(accessToken.getToken(), status.getUserName());
-        WebSocket.Status state = this.messagingServiceProxy.createStatus(status).getContent();
+        SecurityContextManager securityContextManager = new SecurityContextManager();
+        securityContextManager.buildSecurityContext(websocket.getAccessToken().getToken(), websocket.getStatus().getUserName());
+        Model.Status state = this.messagingServiceProxy.createStatus(websocket.getStatus()).getContent();
 
         if (state == null) return;
         this.simpMessageSendingOperations.convertAndSend("/status", state);
     }
 
     @MessageMapping("/conversations/{conversationId}/sendMessage")
-    public void sendCommunicationMessage(@DestinationVariable String conversationId, @Payload Map payload) {
-        WebSocket.Communications communications = (WebSocket.Communications) payload.get("communications");
-        WebSocket.AccessToken accessToken = (WebSocket.AccessToken) payload.get("accessToken");
-        if (communications == null || accessToken == null) return;
+    public void sendCommunicationMessage(@DestinationVariable String conversationId, @Payload Websocket.Communications websocket) {
+        if (websocket == null || websocket.getCommunications() == null || websocket.getAccessToken() == null) return;
 
-        SecurityContextManger securityContextManger = new SecurityContextManger();
-        securityContextManger.buildSecurityContext(accessToken.getToken(), communications.getUserName());
+        SecurityContextManager securityContextManager = new SecurityContextManager();
+        securityContextManager.buildSecurityContext(websocket.getAccessToken().getToken(), websocket.getCommunications().getUserName());
 
-        WebSocket.Communications communication = this.messagingServiceProxy.createCommunications(communications).getContent();
+        Model.Communications communication = this.messagingServiceProxy.createCommunications(websocket.getCommunications()).getContent();
         if (communication == null) return;
 
-        for (WebSocket.Users users : communications.getConversations().getParticipants()) {
-            if (!communications.getSender().equals(users.getAccountId())) {
-                WebSocket.Status status = this.messagingServiceProxy.retrieveStatus(users.getStatus().getStatusId()).getContent();
+        for (Model.Users users : websocket.getCommunications().getConversations().getParticipants()) {
+            if (!websocket.getCommunications().getSender().equals(users.getAccountId())) {
+                Model.Status status = this.messagingServiceProxy.retrieveStatus(users.getStatus().getStatusId()).getContent();
 
                 Notifications notifications = new Notifications();
-                notifications.setBody(communications.getContent());
+                notifications.setBody(websocket.getCommunications().getContent());
                 notifications.setToken(status.getToken());
                 notifications.setData(new HashMap<String, String>(){{put("lastConversionId", communication.getCommunicationId());}});
 
-                if (communications.getContent().length() > 5) notifications.setBody(communications.getContent().substring(0, 5).concat("..."));
-                notifications.setTitle(communications.getConversations().getParticipants().stream().filter(user -> !communications.getSender().equals(user.getAccountId())).map(userName -> userName.getUserName().concat(" ")).reduce("", String::concat));
+                if (websocket.getCommunications().getContent().length() > 5) notifications.setBody(websocket.getCommunications().getContent().substring(0, 5).concat("..."));
+                notifications.setTitle(websocket.getCommunications().getConversations().getParticipants().stream().filter(user -> !websocket.getCommunications().getSender().equals(user.getAccountId())).map(userName -> userName.getUserName().concat(" ")).reduce("", String::concat));
 
                 this.notificationsService.sendPushNotificationToToken(notifications);
             }
         }
-        this.simpMessageSendingOperations.convertAndSend(format("/conversations/%s", conversationId), communications);
+        this.simpMessageSendingOperations.convertAndSend(format("/conversations/%s", conversationId), websocket.getCommunications());
     }
 }
