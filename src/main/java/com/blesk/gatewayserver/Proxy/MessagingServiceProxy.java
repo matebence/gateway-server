@@ -1,7 +1,7 @@
 package com.blesk.gatewayserver.Proxy;
 
 import feign.Headers;
-import com.blesk.gatewayserver.Model.WebSocket;
+import com.blesk.gatewayserver.Model.Model;
 import org.springframework.cloud.netflix.ribbon.RibbonClient;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.hateoas.EntityModel;
@@ -17,13 +17,13 @@ public interface MessagingServiceProxy {
 
     @PostMapping("api/status")
     @Headers("Content-Type: application/json")
-    EntityModel<WebSocket.Status> createStatus(@Valid @RequestBody WebSocket.Status statuses);
+    EntityModel<Model.Status> createStatus(@Valid @RequestBody Model.Status statuses);
 
     @GetMapping("api/status/{statusId}")
     @Headers("Content-Type: application/json")
-    EntityModel<WebSocket.Status> retrieveStatus(@PathVariable("statusId") String statusId);
+    EntityModel<Model.Status> retrieveStatus(@PathVariable("statusId") String statusId);
 
     @PostMapping("api/communications")
     @Headers("Content-Type: application/json")
-    EntityModel<WebSocket.Communications> createCommunications(@Valid @RequestBody WebSocket.Communications communications);
+    EntityModel<Model.Communications> createCommunications(@Valid @RequestBody Model.Communications communications);
 }

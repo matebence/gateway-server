@@ -12,7 +12,7 @@ public class Gateway extends ResourceServerConfigurerAdapter {
 
     @Override
     public void configure(HttpSecurity http) throws Exception {
-        http.authorizeRequests().antMatchers("/authorization-server/**").permitAll().antMatchers("/**").authenticated();
+        http.authorizeRequests().antMatchers("/authorization-server/**", "/websocket/**").permitAll().antMatchers("/**").authenticated();
     }
 
     @Override
