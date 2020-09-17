@@ -35,7 +35,7 @@ public class SecurityContextManger {
     }
 
     private UsernamePasswordAuthenticationToken getUsernamePasswordAuthenticationToken() {
-        return usernamePasswordAuthenticationToken;
+        return this.usernamePasswordAuthenticationToken;
     }
 
     private void setUsernamePasswordAuthenticationToken(UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken) {
@@ -43,7 +43,7 @@ public class SecurityContextManger {
     }
 
     private OAuth2Authentication getoAuth2Authentication() {
-        return oAuth2Authentication;
+        return this.oAuth2Authentication;
     }
 
     private void setoAuth2Authentication(OAuth2Authentication oAuth2Authentication) {
@@ -51,7 +51,7 @@ public class SecurityContextManger {
     }
 
     private OAuth2Request getoAuth2Request() {
-        return oAuth2Request;
+        return this.oAuth2Request;
     }
 
     private void setoAuth2Request(OAuth2Request oAuth2Request) {
@@ -59,7 +59,7 @@ public class SecurityContextManger {
     }
 
     private AccessToken getAccessToken() {
-        return accessToken;
+        return this.accessToken;
     }
 
     private void setAccessToken(AccessToken accessToken) {
@@ -67,7 +67,7 @@ public class SecurityContextManger {
     }
 
     private User getUser() {
-        return user;
+        return this.user;
     }
 
     private void setUser(User user) {
