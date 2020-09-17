@@ -3,6 +3,7 @@ package com.blesk.gatewayserver.Controller;
 import com.blesk.gatewayserver.DTO.Notifications;
 import com.blesk.gatewayserver.Model.WebSocket;
 import com.blesk.gatewayserver.Proxy.MessagingServiceProxy;
+import com.blesk.gatewayserver.Tool.SecurityContextManger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.MessageMapping;
@@ -10,13 +11,9 @@ import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
 import org.springframework.messaging.simp.SimpMessageSendingOperations;
 import com.blesk.gatewayserver.Service.NotificationsServiceImpl;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.oauth2.provider.authentication.OAuth2AuthenticationDetails;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import javax.validation.Valid;
 import java.util.HashMap;
 
 import static java.lang.String.format;
@@ -39,22 +36,22 @@ public class WebSocketController {
     }
 
     @MessageMapping("/state")
-    public void setConversationState(@Payload @Valid WebSocket.Status status, SimpMessageHeaderAccessor headerAccessor) {
-        WebSocket.Status state = null;
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        if (headerAccessor.getSessionAttributes() == null || authentication == null) return;
-        if (authentication.getDetails() instanceof OAuth2AuthenticationDetails) {
-            OAuth2AuthenticationDetails details = (OAuth2AuthenticationDetails) authentication.getDetails();
-            headerAccessor.getSessionAttributes().put("userName", status.getUserName());
-            headerAccessor.getSessionAttributes().put("accessToken", details.getTokenValue());
-            state = this.messagingServiceProxy.createStatus(status).getContent();
-        }
+    public void setConversationState(@Payload WebSocket.Status status, @Payload WebSocket.AccessToken accessToken, SimpMessageHeaderAccessor headerAccessor) {
+        if (headerAccessor.getSessionAttributes() == null || accessToken == null) return;
+        headerAccessor.getSessionAttributes().put("userName", status.getUserName());
+        headerAccessor.getSessionAttributes().put("accessToken", accessToken.getToken());
+        SecurityContextManger securityContextManger = new SecurityContextManger();
+        securityContextManger.buildSecurityContext(accessToken.getToken(), status.getUserName());
+        WebSocket.Status state = this.messagingServiceProxy.createStatus(status).getContent();
         if (state == null) return;
         this.simpMessageSendingOperations.convertAndSend("/status", state);
     }
 
     @MessageMapping("/conversations/{conversationId}/sendMessage")
-    public void sendCommunicationMessage(@DestinationVariable String conversationId, @Payload @Valid WebSocket.Communications communications) {
+    public void sendCommunicationMessage(@DestinationVariable String conversationId, @Payload WebSocket.Communications communications, @Payload WebSocket.AccessToken accessToken) {
+        if (accessToken == null) return;
+        SecurityContextManger securityContextManger = new SecurityContextManger();
+        securityContextManger.buildSecurityContext(accessToken.getToken(), communications.getUserName());
         WebSocket.Communications communication = this.messagingServiceProxy.createCommunications(communications).getContent();
         if (communication == null) return;
         for (WebSocket.Users users : communications.getConversations().getParticipants()) {

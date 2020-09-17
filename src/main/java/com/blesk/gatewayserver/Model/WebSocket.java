@@ -6,6 +6,21 @@ import java.util.Set;
 
 public class WebSocket {
 
+    public static class AccessToken {
+        private String token;
+
+        public AccessToken() {
+        }
+
+        public String getToken() {
+            return this.token;
+        }
+
+        public void setToken(String token) {
+            this.token = token;
+        }
+    }
+
     public static class Communications {
 
         private String communicationId;
