@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.HashMap;
+import java.util.Map;
 
 import static java.lang.String.format;
 
@@ -36,24 +37,34 @@ public class WebSocketController {
     }
 
     @MessageMapping("/state")
-    public void setConversationState(@Payload WebSocket.Status status, @Payload WebSocket.AccessToken accessToken, SimpMessageHeaderAccessor headerAccessor) {
-        if (headerAccessor.getSessionAttributes() == null || accessToken == null) return;
+    public void setConversationState(@Payload Map payload, SimpMessageHeaderAccessor headerAccessor) {
+        WebSocket.Status status = (WebSocket.Status) payload.get("status");
+        WebSocket.AccessToken accessToken = (WebSocket.AccessToken) payload.get("accessToken");
+
+        if (headerAccessor.getSessionAttributes() == null || status == null || accessToken == null) return;
         headerAccessor.getSessionAttributes().put("userName", status.getUserName());
         headerAccessor.getSessionAttributes().put("accessToken", accessToken.getToken());
+
         SecurityContextManger securityContextManger = new SecurityContextManger();
         securityContextManger.buildSecurityContext(accessToken.getToken(), status.getUserName());
         WebSocket.Status state = this.messagingServiceProxy.createStatus(status).getContent();
+
         if (state == null) return;
         this.simpMessageSendingOperations.convertAndSend("/status", state);
     }
 
     @MessageMapping("/conversations/{conversationId}/sendMessage")
-    public void sendCommunicationMessage(@DestinationVariable String conversationId, @Payload WebSocket.Communications communications, @Payload WebSocket.AccessToken accessToken) {
-        if (accessToken == null) return;
+    public void sendCommunicationMessage(@DestinationVariable String conversationId, @Payload Map payload) {
+        WebSocket.Communications communications = (WebSocket.Communications) payload.get("communications");
+        WebSocket.AccessToken accessToken = (WebSocket.AccessToken) payload.get("accessToken");
+        if (communications == null || accessToken == null) return;
+
         SecurityContextManger securityContextManger = new SecurityContextManger();
         securityContextManger.buildSecurityContext(accessToken.getToken(), communications.getUserName());
+
         WebSocket.Communications communication = this.messagingServiceProxy.createCommunications(communications).getContent();
         if (communication == null) return;
+
         for (WebSocket.Users users : communications.getConversations().getParticipants()) {
             if (!communications.getSender().equals(users.getAccountId())) {
                 WebSocket.Status status = this.messagingServiceProxy.retrieveStatus(users.getStatus().getStatusId()).getContent();

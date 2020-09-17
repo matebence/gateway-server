@@ -15,7 +15,7 @@ public class FeignClientImpl implements FeignClient {
     @Override
     public void apply(RequestTemplate requestTemplate) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        if ((authentication.getDetails() instanceof AccessToken) || !(authentication.getDetails() instanceof AccessToken)) return;
+        if (!(authentication.getDetails() instanceof AccessToken)) return;
 
         AccessToken accessToken = (AccessToken) authentication.getDetails();
         String tokenValue = accessToken.getTokenValue();
