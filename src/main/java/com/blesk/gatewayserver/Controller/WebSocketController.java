@@ -70,7 +70,7 @@ public class WebSocketController {
                 notifications.setData(new HashMap<String, String>(){{put("lastConversionId", communication.getCommunicationId());}});
 
                 if (websocket.getCommunications().getContent().length() > 5) notifications.setBody(websocket.getCommunications().getContent().substring(0, 5).concat("..."));
-                notifications.setTitle(websocket.getCommunications().getConversations().getParticipants().stream().filter(user -> !websocket.getCommunications().getSender().equals(user.getAccountId())).map(userName -> userName.getUserName().concat(" ")).reduce("", String::concat));
+                notifications.setTitle(websocket.getCommunications().getConversations().getParticipants().stream().filter(user -> !websocket.getCommunications().getSender().equals(user.getAccountId())).map(userName -> userName.getStatus().getUserName().concat(" ")).reduce("", String::concat));
 
                 this.notificationsService.sendPushNotificationToToken(notifications);
             }
