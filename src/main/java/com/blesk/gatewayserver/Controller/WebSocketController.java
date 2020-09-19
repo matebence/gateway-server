@@ -67,7 +67,7 @@ public class WebSocketController {
                 Notifications notifications = new Notifications();
                 notifications.setBody(websocket.getCommunications().getContent());
                 notifications.setToken(status.getToken());
-                notifications.setData(new HashMap<String, String>(){{put("lastConversionId", communication.getCommunicationId());}});
+                notifications.setData(new HashMap<String, String>(){{put("lastConversationId", communication.getCommunicationId());}});
 
                 if (websocket.getCommunications().getContent().length() > 5) notifications.setBody(websocket.getCommunications().getContent().substring(0, 5).concat("..."));
                 notifications.setTitle(websocket.getCommunications().getConversations().getParticipants().stream().filter(user -> !websocket.getCommunications().getSender().equals(user.getAccountId())).map(userName -> userName.getStatus().getUserName().concat(" ")).reduce("", String::concat));
