@@ -4,6 +4,32 @@ import com.blesk.gatewayserver.Model.Model;
 
 public class Websocket {
 
+    public static class Chanel {
+
+        private Model.Chanel chanel;
+
+        private Model.AccessToken accessToken;
+
+        public Chanel() {
+        }
+
+        public Model.Chanel getChanel() {
+            return this.chanel;
+        }
+
+        public void setChanel(Model.Chanel chanel) {
+            this.chanel = chanel;
+        }
+
+        public Model.AccessToken getAccessToken() {
+            return this.accessToken;
+        }
+
+        public void setAccessToken(Model.AccessToken accessToken) {
+            this.accessToken = accessToken;
+        }
+    }
+
     public static class Status {
 
         private Model.Status status;

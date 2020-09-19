@@ -31,6 +31,6 @@ public class PushNotificationImpl implements PushNotification {
 
     @Override
     public Message.Builder getPreconfiguredMessageBuilder(Notifications notifications) {
-        return  Message.builder().putAllData(notifications.getData()).setWebpushConfig(getWebpushConfig()).setNotification(Notification.builder().setBody(notifications.getBody()).setTitle(notifications.getTitle()).setImage(notifications.getImageUrl()).build());
+        return  Message.builder().putAllData(notifications.getData()).setWebpushConfig(getWebpushConfig()).setNotification(Notification.builder().setBody(notifications.getBody()).setTitle(notifications.getTitle()).build());
     }
 }
