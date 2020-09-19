@@ -6,6 +6,7 @@ import com.blesk.gatewayserver.Model.Model;
 import com.blesk.gatewayserver.Proxy.MessagingServiceProxy;
 import com.blesk.gatewayserver.Config.SecurityContextManager;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataAccessException;
 import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.Payload;
@@ -15,6 +16,10 @@ import com.blesk.gatewayserver.Service.NotificationsServiceImpl;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.xml.bind.DatatypeConverter;
+import java.io.UnsupportedEncodingException;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.HashMap;
 
 import static java.lang.String.format;
@@ -56,8 +61,11 @@ public class WebSocketController {
 
         SecurityContextManager securityContextManager = new SecurityContextManager();
         securityContextManager.buildSecurityContext(websocket.getAccessToken().getToken(), websocket.getChanel().getFrom());
-
-        this.simpMessageSendingOperations.convertAndSend(format("/conversation/%s", websocket.getChanel().getConversationId()), websocket.getChanel());
+        try {
+            this.simpMessageSendingOperations.convertAndSend(format("/conversation/%s", DatatypeConverter.printHexBinary(MessageDigest.getInstance("MD5").digest(websocket.getChanel().getTo().getBytes("UTF-8"))).toLowerCase()), websocket.getChanel());
+        } catch (DataAccessException | NoSuchAlgorithmException | UnsupportedEncodingException ex) {
+            ex.printStackTrace();
+        }
     }
 
     @MessageMapping("/communication/{conversationId}/sendCommunication")
