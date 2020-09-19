@@ -21,6 +21,42 @@ public class Model {
         }
     }
 
+    public static class Chanel {
+
+        private String from;
+
+        private String to;
+
+        private String conversationId;
+
+        public Chanel() {
+        }
+
+        public String getFrom() {
+            return this.from;
+        }
+
+        public void setFrom(String from) {
+            this.from = from;
+        }
+
+        public String getTo() {
+            return this.to;
+        }
+
+        public void setTo(String to) {
+            this.to = to;
+        }
+
+        public String getConversationId() {
+            return this.conversationId;
+        }
+
+        public void setConversationId(String conversationId) {
+            this.conversationId = conversationId;
+        }
+    }
+
     public static class Communications {
 
         private String communicationId;

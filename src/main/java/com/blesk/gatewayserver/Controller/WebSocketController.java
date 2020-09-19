@@ -37,8 +37,8 @@ public class WebSocketController {
     }
 
     @MessageMapping("/state")
-    public void setConversationState(@Payload Websocket.Status websocket, SimpMessageHeaderAccessor headerAccessor) {
-        if (headerAccessor.getSessionAttributes() == null || websocket == null || websocket.getStatus() == null || websocket.getStatus() == null) return;
+    public void sendConversationState(@Payload Websocket.Status websocket, SimpMessageHeaderAccessor headerAccessor) {
+        if (headerAccessor.getSessionAttributes() == null || websocket == null || websocket.getStatus() == null || websocket.getAccessToken() == null) return;
         headerAccessor.getSessionAttributes().put("accessToken", websocket.getAccessToken().getToken());
         headerAccessor.getSessionAttributes().put("userName", websocket.getStatus().getUserName());
 
@@ -50,7 +50,17 @@ public class WebSocketController {
         this.simpMessageSendingOperations.convertAndSend("/status", state);
     }
 
-    @MessageMapping("/conversations/{conversationId}/sendMessage")
+    @MessageMapping("/conversation/{userIdentity}/sendConversation")
+    public void sendConversationChanel(@DestinationVariable String userIdentity, @Payload Websocket.Chanel websocket) {
+        if (websocket == null || websocket.getChanel() == null || websocket.getAccessToken() == null) return;
+
+        SecurityContextManager securityContextManager = new SecurityContextManager();
+        securityContextManager.buildSecurityContext(websocket.getAccessToken().getToken(), websocket.getChanel().getFrom());
+
+        this.simpMessageSendingOperations.convertAndSend(format("/conversation/%s", websocket.getChanel().getConversationId()), websocket.getChanel());
+    }
+
+    @MessageMapping("/communication/{conversationId}/sendCommunication")
     public void sendCommunicationMessage(@DestinationVariable String conversationId, @Payload Websocket.Communications websocket) {
         if (websocket == null || websocket.getCommunications() == null || websocket.getAccessToken() == null) return;
 
@@ -69,12 +79,12 @@ public class WebSocketController {
                 notifications.setToken(status.getToken());
                 notifications.setData(new HashMap<String, String>(){{put("lastConversationId", communication.getCommunicationId());}});
 
-                if (websocket.getCommunications().getContent().length() > 5) notifications.setBody(websocket.getCommunications().getContent().substring(0, 5).concat("..."));
+                if (websocket.getCommunications().getContent().length() > 10) notifications.setBody(websocket.getCommunications().getContent().substring(0, 10).concat("..."));
                 notifications.setTitle(websocket.getCommunications().getConversations().getParticipants().stream().filter(user -> !websocket.getCommunications().getSender().equals(user.getAccountId())).map(userName -> userName.getStatus().getUserName().concat(" ")).reduce("", String::concat));
 
                 this.notificationsService.sendPushNotificationToToken(notifications);
             }
         }
-        this.simpMessageSendingOperations.convertAndSend(format("/conversations/%s", conversationId), websocket.getCommunications());
+        this.simpMessageSendingOperations.convertAndSend(format("/communication/%s", conversationId), communication);
     }
 }
