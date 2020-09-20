@@ -82,6 +82,8 @@ public class WebSocketController {
             if (!websocket.getCommunications().getSender().equals(users.getAccountId())) {
                 Model.Status status = this.messagingServiceProxy.retrieveStatus(users.getStatus().getStatusId()).getContent();
 
+                if (status == null || status.getToken() == null) break;
+
                 Notifications notifications = new Notifications();
                 notifications.setBody(websocket.getCommunications().getContent());
                 notifications.setToken(status.getToken());
