@@ -22,7 +22,7 @@ public class WebSocketConfig extends AbstractSecurityWebSocketMessageBrokerConfi
     public void configureMessageBroker(MessageBrokerRegistry messageBrokerRegistry) {
         if(messageBrokerRegistry != null){
             messageBrokerRegistry.setApplicationDestinationPrefixes("/websocket-service");
-            messageBrokerRegistry.enableSimpleBroker("/communication", "/status", "conversation");
+            messageBrokerRegistry.enableSimpleBroker("/communication", "/status", "/conversation");
         }
     }
 
